@@ -1,0 +1,42 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Cargo
+**/Cargo.lock
+
+# Logs
+*.log
+logs/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Python helpers
+__pycache__/
+*.pyc
+.venv/
+
+# Node / Web
+node_modules/
+dist/
+build/
+.cache/
+.next/
+out/
+coverage/
+*.map
+
+# Data
+*.csv
+*.bin
+*.dat
+*.npy
+
+# Env
+.env

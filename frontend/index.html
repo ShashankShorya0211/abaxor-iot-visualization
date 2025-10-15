@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>IoT Stream — All Channels</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Chart.js MUST load before script.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="page-header">
+    <h1>IoT Stream Viewer</h1>
+    <p class="sub">Live visualization of all channels (legend toggles lines)</p>
+  </header>
+
+  <!-- Control bar -->
+  <section class="controls">
+    <label class="ctrl">
+      <span>Mode</span>
+      <select id="modeSelect">
+        <option value="with_offset" selected>with_offset</option>
+        <option value="without_offset">without_offset</option>
+        <option value="ramp">ramp</option>
+      </select>
+    </label>
+
+    <label class="ctrl">
+      <span>Packets per poll</span>
+      <input id="packets" type="number" min="1" step="1" value="1" />
+    </label>
+
+    <label class="ctrl">
+      <span>Poll interval (ms)</span>
+      <input id="pollMs" type="number" min="50" step="10" value="250" />
+    </label>
+
+    <div class="buttons">
+      <button id="startStream">Start Stream</button>
+      <button id="stopStream" class="secondary">Stop Stream</button> 
+      <!-------------loupe control------>
+      <button id="loupeToggle" title="Magnify (loupe)">🔍 Magnify</button>
+      <button id="loupeSize" class="secondary" title="Change loupe size/zoom">Loupe: 140px ×2</button>
+   </div>
+  </section>
+
+  <!-- Main 2-column layout -->
+  <main class="layout">
+    <!-- Chart on the left -->
+    <section class="chart-wrap">
+      <canvas id="channelChart" aria-label="All channels chart"></canvas>
+    </section>
+
+    <!-- Scaling panel on the right -->
+    <section class="card scaling">
+      <h2>Scaling</h2>
+
+      <div class="axis-block">
+        <div class="axis-title">X-Axis</div>
+        <div class="axis-row">
+          <label class="ctrl small">
+            <span>Min</span>
+            <input id="xMin" type="number" step="1" placeholder="auto" />
+          </label>
+          <label class="ctrl small">
+            <span>Max</span>
+            <input id="xMax" type="number" step="1" placeholder="auto" />
+          </label>
+        </div>
+      </div>
+
+      <div class="axis-block">
+        <div class="axis-title">Y-Axis</div>
+        <div class="axis-row">
+          <label class="ctrl small">
+            <span>Min</span>
+            <input id="yMin" type="number" step="1" placeholder="auto" />
+          </label>
+          <label class="ctrl small">
+            <span>Max</span>
+            <input id="yMax" type="number" step="1" placeholder="auto" />
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Console at the bottom -->
+  <section>
+    <pre id="statusConsole" class="console" aria-live="polite"></pre>
+  </section>
+
+  <!-- JS -->
+  <script defer src="script.js?v=3"></script>
+</body>
+</html>
+
