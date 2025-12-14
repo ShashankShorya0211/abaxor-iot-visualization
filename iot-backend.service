@@ -1,0 +1,16 @@
+[Unit]
+Description=IoT Backend Service
+After=network.target
+
+[Service]
+Type=simple
+Nice=-5
+Restart=always
+RestartSec=5
+User=root
+ExecStart=/home/iot_user/iot_backend/target/release/iot-backend
+WorkingDirectory=/home/iot_user/iot_backend
+
+[Install]
+WantedBy=multi-user.target
+

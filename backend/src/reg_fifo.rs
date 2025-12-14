@@ -12,6 +12,9 @@ use std::ffi::CString;
 use super::*;
 use log::{info, error};
 
+use std::sync::OnceLock;
+static FIFO_FD: OnceLock<c_int> = OnceLock::new();
+
 
 //##################### register bank ioctl declarations #####################
 
@@ -82,7 +85,7 @@ ioctl_write_buf!(write_axi_str_rx_user, 0, 17, u8);                             
 ioctl_read_buf!(read_axi_str_rx_user, 0, 17, u8);                               // ID: 017 : Receive USER Register
 
 //#####################  register bank initialization #####################
-
+/*
 /// Registerbank initialisieren.
 pub fn init() -> c_int {
   info_println!(" -> FIFO: initialisieren");
@@ -93,6 +96,24 @@ pub fn init() -> c_int {
 
   fd
 }
+*/
+
+/// FIFO initialisieren (idempotent).
+/// Opens the FIFO device once; subsequent calls reuse the same fd.
+pub fn init() -> c_int {
+    *FIFO_FD.get_or_init(|| {
+        info_println!(" -> FIFO: initialisieren");
+        info_println!(" -> FIFO: Device öffnen");
+
+        let fd = open_reg_bank();
+        if fd < 0 {
+            panic!("Failed to open /dev/hh_amv_psfifo_dev (fd = {fd})");
+        }
+
+        fd
+    })
+}
+
 
 /// open device for register
 fn open_reg_bank() -> c_int {

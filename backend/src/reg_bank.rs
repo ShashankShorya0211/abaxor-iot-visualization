@@ -18,6 +18,9 @@ use std::ffi::CString;
 use super::*;
 use log::{info, warn, error, debug};
 
+use std::sync::OnceLock;
+static REG_FD: OnceLock<c_int> = OnceLock::new();
+
 
 //##################### register bank ioctl declarations #####################
 
@@ -1351,7 +1354,7 @@ ioctl_read_buf!(read_hls_slope_baseline_left_valid, 1, 116, u8);                
 ioctl_read_buf!(read_hls_slope_baseline_right_valid, 1, 117, u8);               // ID: 373 : Right valid
 
 //#####################  register bank initialization #####################
-
+/*
 /// Registerbank initialisieren.
 pub fn init() -> c_int {
   info_println!(" -> Registerbank: initialisieren");
@@ -1384,6 +1387,58 @@ pub fn init() -> c_int {
 
   fd
 }
+*/
+
+/// Registerbank initialisieren (idempotent).
+/// Opens the device and runs self-test only once.
+/// Subsequent calls just return the same fd.
+pub fn init() -> c_int {
+    *REG_FD.get_or_init(|| {
+        info_println!(" -> Registerbank: initialisieren");
+
+        // Registerbank öffnen
+        info_println!(" -> Registerbank: Device öffnen");
+        let fd = open_reg_bank();
+        if fd < 0 {
+            // fail early if device cannot be opened
+            panic!("Failed to open /dev/hh_amv_psreg_dev (fd = {fd})");
+        }
+
+        let mut err_cnt = 0u8;
+
+        // Registerbank Schreib- und Lesetest
+        info_println!(" -> Registerbank: Schreib- und Lesetest");
+        for _ in 0..100 {
+            let rand_value = rand::random::<u32>();
+
+            // don't panic on error, just count it
+            if let Err(_e) = set_test_regbank(fd, rand_value) {
+                err_cnt += 1;
+                continue;
+            }
+
+            let reg = get_test_regbank(fd);
+            if reg != rand_value {
+                err_cnt += 1;
+            }
+        }
+
+        if err_cnt > 0 {
+            error_println!(
+                "Register-Test fehlgeschlagen. Fehlversuche: {0}/100",
+                err_cnt
+            );
+        }
+
+        // Registerbank Werte auslesen
+        info_println!(" -> Registerbank: verschiedene Register-Einträge ausgeben");
+        let fpga_version = get_version(fd);
+        info_println!(" # Version 0x{0:04X}", fpga_version);
+
+        fd
+    })
+}
+
 
 /// open device for register
 pub fn open_reg_bank() -> c_int {
@@ -1449,7 +1504,7 @@ pub fn get_status(fd: RawFd) -> u32 {
 pub fn set_test_regbank(fd: RawFd, data: u32) -> Result<(), &'static str> {
     let bytes = data.to_le_bytes();
     unsafe {
-      write_test_regbank(fd, &bytes).unwrap();
+      write_test_regbank(fd, &bytes).map_err(|_| "write_test_regbank failed")?;
     };
     Ok(())
 }

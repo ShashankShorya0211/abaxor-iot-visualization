@@ -1,197 +1,308 @@
-:root {
-  --gap: 12px;
-  --radius: 10px;
-  --border: #e3e3e3;
-  --bg: #fff;
-  --ink: #111;
-  --muted: #666;
+:root{
+  --bg:#f3f5f9;
+  --card:#ffffff;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --line:#e6ebf2;
+
+  --radius:18px;
+  --shadow: 0 10px 30px rgba(2,6,23,.10);
+
+  --blue:#2563eb;
+  --blue-2:#1d4ed8;
+  --red:#dc2626;
+  --green:#16a34a;
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0 auto;
-  max-width: 1100px;
-  padding: 16px;
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: var(--ink);
-  background: var(--bg);
-  line-height: 1.4;
+  background:var(--bg);
+  color:var(--ink);
 }
 
-.page-header { margin-bottom: 8px; }
-.page-header h1 { margin: 0 0 4px; font-size: 22px; }
-.page-header .sub { margin: 0; color: var(--muted); font-size: 14px; }
-
-.controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--gap);
-  align-items: end;
-  margin: 10px 0 12px;
+.app{
+  max-width: 1200px;
+  margin: 18px auto;
+  padding: 0 16px 22px;
 }
-.ctrl { display: grid; gap: 6px; font-size: 14px; }
-.ctrl input, .ctrl select {
-  appearance: none;
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
+
+/* Cards */
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
   border-radius: var(--radius);
-  font-size: 14px;
-  background: #fff;
+  box-shadow: var(--shadow);
 }
-.buttons { display: flex; gap: 8px; align-items: center; }
-button {
-  cursor: pointer;
+
+.header-card{
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.header-left h1{
+  margin:0;
+  font-size: 20px;
+  font-weight: 750;
+}
+.sub{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size: 13px;
+}
+
+/* Status pill */
+.status-pill{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-radius: 999px;
+  border:1px solid var(--line);
+  background: #fbfdff;
+  font-weight: 650;
+  color: #0b1220;
+}
+.status-pill .dot{
+  width:10px; height:10px; border-radius:50%;
+  background: var(--red);
+  box-shadow: 0 0 0 4px rgba(220,38,38,.12);
+}
+
+/* Controls */
+.controls-card{
+  margin-top:14px;
+  padding:16px 18px;
+}
+.controls-top{
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:14px;
+}
+.field{ display:grid; gap:8px; }
+.field-label{
+  font-size:11px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  font-weight:700;
+}
+select,input{
+  width:100%;
+  padding: 10px 12px;
+  border:1px solid var(--line);
+  border-radius: 12px;
+  background:#fff;
+  font-size:14px;
+  outline:none;
+}
+select:focus,input:focus{
+  border-color: rgba(37,99,235,.55);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+}
+
+/* Buttons */
+.controls-actions{
+  margin-top: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.btn-group{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.btn{
+  border:1px solid transparent;
+  border-radius: 12px;
   padding: 10px 14px;
-  border-radius: var(--radius);
-  border: 1px solid #0a84ff;
-  background: #0a84ff;
-  color: #fff;
-  font-weight: 600;
+  font-weight: 750;
+  cursor:pointer;
+  font-size: 13px;
+  background:#eef2ff;
+  color:#0f172a;
 }
-button.secondary {
-  border-color: #bbb;
-  background: #f5f5f5;
-  color: #111;
+.btn.primary{
+  background: var(--blue);
+  color:#fff;
 }
+.btn.primary:hover{ background: var(--blue-2); }
+.btn.danger{
+  background: var(--red);
+  color:#fff;
+}
+.btn.neutral{
+  background:#e5e7eb;
+  color:#111827;
+}
+.btn.soft{
+  background:#eef2f7;
+  border-color: var(--line);
+}
+.btn.icon{
+  padding: 10px 12px;
+  background:#eef2f7;
+  border-color: var(--line);
+}
+.btn:disabled{ opacity:.55; cursor:not-allowed; }
 
-/* =========================
-   Layout: chart + scaling side by side
-   ========================= */
-.layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr; /* chart wider */
-  gap: var(--gap);
-  align-items: start;
-  margin-bottom: 12px;
+/* Register block */
+.reg-block{
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
-
-/* Responsive: stack on narrow screens */
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-  .card.scaling {
-    position: static;
-  }
+.reg-title{
+  font-size:11px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  font-weight:800;
+  margin-bottom: 10px;
 }
-
-/* =========================
-   Chart area
-   ========================= */
-.chart-wrap {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 8px;
-  min-height: 420px;   /* keep it roomy */
-  background: #fff;
+.reg-row{
+  display:grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap:10px;
+  align-items:center;
 }
-#channelChart { width: 100%; height: 100%; }
-
-/* =========================
-   Console
-   ========================= */
-.console {
-  height: 160px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 8px;
-  overflow: auto;
-  background: #fafafa;
+.hex{
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12px;
-  white-space: pre-wrap;
-  color: #222;
 }
 
-/* =========================
-   Scaling card
-   ========================= */
-.card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  background: #fff;
+/* Main layout */
+.main-grid{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  gap:14px;
+  align-items:start;
 }
 
-.card.scaling {
-  position: sticky;
-  top: 20px;
-  align-self: start;
-  height: fit-content;
+.chart-card{ padding:14px; }
+.card-title{
+  font-weight: 800;
+  margin: 2px 0 12px;
+  color:#0b1220;
 }
-
-.scaling h2 {
-  margin: 0 0 8px;
-  font-size: 20px;
-  text-align: center;
-  font-style: italic;
+.chart-frame{
+  border:1px solid var(--line);
+  border-radius: 14px;
+  height: 420px;
+  padding: 10px;
+  background:#fff;
 }
+#channelChart{ width:100%; height:100%; }
 
-.axis-block { margin-top: 8px; }
-
-.axis-title {
-  text-align: center;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 6px 10px;
-  margin-bottom: 10px;
-  font-weight: 600;
+/* Sidebar */
+.sidebar{
+  display:grid;
+  gap:14px;
 }
-
-.axis-row {
-  display: grid;
+.stats-grid{
+  display:grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--gap);
-  align-items: end;
+  gap:12px;
+}
+.mini-card{
+  background: var(--card);
+  border:1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding:12px;
+  border-left: 4px solid #94a3b8;
+}
+.mini-title{
+  font-size:10px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  font-weight:800;
+}
+.mini-value{
+  margin-top:8px;
+  font-size:18px;
+  font-weight:900;
+}
+.mini-card.accent-green{ border-left-color: var(--green); }
+.mini-card.accent-red{ border-left-color: var(--red); }
+
+/* Scaling */
+.scaling-card{ padding:14px; }
+.scaling-title{
+  font-style: italic;
+  font-weight: 900;
+  text-align:center;
+  margin: 2px 0 10px;
+}
+.axis{ margin-top:10px; }
+.axis-head{
+  text-align:center;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius: 14px;
+  font-weight: 800;
+  background:#fbfdff;
+}
+.axis-row{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+.mini-field{ display:grid; gap:6px; }
+.mini-field span{
+  font-size:10px;
+  letter-spacing:.12em;
+  color:var(--muted);
+  font-weight:800;
 }
 
-.ctrl.small { display: grid; gap: 6px; }
-.ctrl.small span { font-size: 12px; color: var(--muted); }
-.ctrl.small input {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: #fff;
-  font-size: 14px;
+/* Console */
+.console-card{
+  margin-top:14px;
+  border-radius: 18px;
+  overflow:hidden;
+  box-shadow: var(--shadow);
+  background: linear-gradient(90deg, #0b1220, #0f172a);
+}
+.console-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 14px;
+  color:#e2e8f0;
+  font-weight: 800;
+  letter-spacing:.12em;
+  font-size:11px;
+}
+.console-clear{
+  background:transparent;
+  border:0;
+  color:#cbd5e1;
+  cursor:pointer;
+  font-weight:700;
+}
+.console-clear:hover{ color:#fff; }
+
+.console{
+  margin:0;
+  padding: 12px 14px 16px;
+  height: 150px;
+  overflow:auto;
+  color:#00ff66;
+  text-shadow: 0 0 6px rgba(0,255,102,0.25);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size:12px;
+  white-space: pre-wrap;
 }
 
-/* =========================
-   Dark Mode support
-   ========================= */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --border: #2b2b2b; --bg: #121212; --ink: #f1f1f1; --muted: #a0a0a0;
-  }
-  .chart-wrap, .console, .card { background: #1a1a1a; }
-  .ctrl input, .ctrl select,
-  .ctrl.small input { background: #151515; color: var(--ink); border-color: var(--border); }
-  button.secondary { background: #2a2a2a; color: var(--ink); border-color: var(--border); }
-}
-
-/* Make chart area a positioning context for the floating loupe */
-.chart-wrap {
-  position: relative; /* NEW: to anchor the loupe inside */
-}
-
-/* When loupe is active, hide the regular pointer */
-.chart-wrap.loupe-mode {
-  cursor: none; /* we draw our own circular loupe that follows cursor */
-}
-
-/* The loupe itself (a small circular canvas we draw into) */
-.loupe-canvas {
-  position: absolute;
-  width: 140px;              /* default size; JS can change */
-  height: 140px;
-  border: 3px solid #000;
-  border-radius: 50%;
-  pointer-events: none;      /* let mouse pass through */
-  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-  background: transparent;
-  /* Optional: a subtle crosshair */
-  /* background-image: radial-gradient(circle at center, rgba(0,0,0,0.12) 1px, transparent 1px); */
+/* Responsive */
+@media (max-width: 980px){
+  .controls-top{ grid-template-columns: 1fr; }
+  .main-grid{ grid-template-columns: 1fr; }
+  .chart-frame{ height: 380px; }
 }
 

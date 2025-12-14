@@ -4,94 +4,168 @@
   <meta charset="utf-8" />
   <title>IoT Stream — All Channels</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Chart.js MUST load before script.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="page-header">
-    <h1>IoT Stream Viewer</h1>
-    <p class="sub">Live visualization of all channels (legend toggles lines)</p>
-  </header>
 
-  <!-- Control bar -->
-  <section class="controls">
-    <label class="ctrl">
-      <span>Mode</span>
-      <select id="modeSelect">
-        <option value="with_offset" selected>with_offset</option>
-        <option value="without_offset">without_offset</option>
-        <option value="ramp">ramp</option>
-      </select>
-    </label>
+  <div class="app">
 
-    <label class="ctrl">
-      <span>Packets per poll</span>
-      <input id="packets" type="number" min="1" step="1" value="1" />
-    </label>
+    <!-- Header card -->
+    <header class="card header-card">
+      <div class="header-left">
+        <h1>IoT Stream Viewer</h1>
+        <p class="sub">Live visualization of all channels (legend toggles lines)</p>
+      </div>
 
-    <label class="ctrl">
-      <span>Poll interval (ms)</span>
-      <input id="pollMs" type="number" min="50" step="10" value="250" />
-    </label>
+      <div class="status-pill" id="uiStatusPill">
+        <span class="dot" id="pollStatusLed"></span>
+        <span class="label" id="uiStatusText">Ready</span>
+      </div>
+    </header>
 
-    <div class="buttons">
-      <button id="startStream">Start Stream</button>
-      <button id="stopStream" class="secondary">Stop Stream</button> 
-      <!-------------loupe control------>
-      <button id="loupeToggle" title="Magnify (loupe)">🔍 Magnify</button>
-      <button id="loupeSize" class="secondary" title="Change loupe size/zoom">Loupe: 140px ×2</button>
-   </div>
-  </section>
+    <!-- Controls card -->
+    <section class="card controls-card">
 
-  <!-- Main 2-column layout -->
-  <main class="layout">
-    <!-- Chart on the left -->
-    <section class="chart-wrap">
-      <canvas id="channelChart" aria-label="All channels chart"></canvas>
-    </section>
+      <div class="controls-top">
+        <label class="field">
+          <span class="field-label">MODE</span>
+          <select id="modeSelect">
+            <option value="with_offset" selected>with_offset</option>
+            <option value="without_offset">without_offset</option>
+            <option value="ramp">ramp</option>
+          </select>
+        </label>
 
-    <!-- Scaling panel on the right -->
-    <section class="card scaling">
-      <h2>Scaling</h2>
+        <label class="field">
+          <span class="field-label">PACKETS PER POLL</span>
+          <input id="packets" type="number" min="1" step="1" value="1" />
+        </label>
 
-      <div class="axis-block">
-        <div class="axis-title">X-Axis</div>
-        <div class="axis-row">
-          <label class="ctrl small">
-            <span>Min</span>
-            <input id="xMin" type="number" step="1" placeholder="auto" />
-          </label>
-          <label class="ctrl small">
-            <span>Max</span>
-            <input id="xMax" type="number" step="1" placeholder="auto" />
-          </label>
+        <label class="field">
+          <span class="field-label">POLL INTERVAL (MS)</span>
+          <input id="pollMs" type="number" min="50" step="10" value="250" />
+        </label>
+      </div>
+
+      <div class="controls-actions">
+        <div class="btn-group">
+          <button id="startStream" class="btn primary">▶ Start</button>
+          <button id="pauseStream" class="btn neutral">‖ Pause</button>
+          <button id="stopStream" class="btn danger">■ Stop</button>
+        </div>
+
+        <div class="btn-group right">
+          <button id="loupeToggle" class="btn soft">🔍 Magnify</button>
+          <button id="loupeSize" class="btn soft">Loupe: 140px ×2</button>
+          <button id="exportCsv" class="btn soft">📊 Export CSV</button>
         </div>
       </div>
 
-      <div class="axis-block">
-        <div class="axis-title">Y-Axis</div>
-        <div class="axis-row">
-          <label class="ctrl small">
-            <span>Min</span>
-            <input id="yMin" type="number" step="1" placeholder="auto" />
-          </label>
-          <label class="ctrl small">
-            <span>Max</span>
-            <input id="yMax" type="number" step="1" placeholder="auto" />
-          </label>
+      <!-- Register row -->
+      <div class="reg-block">
+        <div class="reg-title">REGISTER 196 (DAC_CH0_MSB)</div>
+        <div class="reg-row">
+          <button id="reg196Read" class="btn soft">Read</button>
+
+          <input
+            id="reg196Value"
+            type="text"
+            inputmode="numeric"
+            placeholder="e.g. 123 or 0x0000007B"
+            aria-label="Register 196 value"
+          />
+
+          <button id="reg196Write" class="btn primary">Write</button>
+          <button class="btn icon" type="button" title="Hex view" aria-label="Hex view">
+            <span id="reg196Hex" class="hex">—</span>
+          </button>
         </div>
       </div>
+
     </section>
-  </main>
 
-  <!-- Console at the bottom -->
-  <section>
-    <pre id="statusConsole" class="console" aria-live="polite"></pre>
-  </section>
+    <!-- Main grid: chart + right sidebar -->
+    <main class="main-grid">
 
-  <!-- JS -->
-  <script defer src="script.js?v=3"></script>
+      <section class="card chart-card">
+        <div class="card-title">All Channels</div>
+        <div class="chart-frame">
+          <canvas id="channelChart" aria-label="All channels chart"></canvas>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+
+        <div class="stats-grid">
+          <div class="mini-card">
+            <div class="mini-title">ACTIVE CHANNELS</div>
+            <div class="mini-value" id="statActiveChannels">—</div>
+          </div>
+
+          <div class="mini-card">
+            <div class="mini-title">DATA POINTS / CHANNEL</div>
+            <div class="mini-value" id="statPointsPerChannel">—</div>
+          </div>
+
+          <div class="mini-card accent-green">
+            <div class="mini-title">UPDATE RATE (HZ)</div>
+            <div class="mini-value" id="statUpdateHz">—</div>
+          </div>
+
+          <div class="mini-card accent-red">
+            <div class="mini-title">TOTAL PACKETS</div>
+            <div class="mini-value" id="statTotalPackets">0</div>
+          </div>
+        </div>
+
+        <section class="card scaling-card">
+          <div class="scaling-title">Scaling</div>
+
+          <div class="axis">
+            <div class="axis-head">X-Axis</div>
+            <div class="axis-row">
+              <label class="mini-field">
+                <span>MIN</span>
+                <input id="xMin" type="number" step="1" placeholder="auto" />
+              </label>
+              <label class="mini-field">
+                <span>MAX</span>
+                <input id="xMax" type="number" step="1" placeholder="auto" />
+              </label>
+            </div>
+          </div>
+
+          <div class="axis">
+            <div class="axis-head">Y-Axis</div>
+            <div class="axis-row">
+              <label class="mini-field">
+                <span>MIN</span>
+                <input id="yMin" type="number" step="1" placeholder="auto" />
+              </label>
+              <label class="mini-field">
+                <span>MAX</span>
+                <input id="yMax" type="number" step="1" placeholder="auto" />
+              </label>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+    </main>
+
+    <!-- Console -->
+    <section class="console-card">
+      <div class="console-head">
+        <span>CONSOLE</span>
+        <button id="clearConsole" class="console-clear" type="button">Clear</button>
+      </div>
+      <pre id="statusConsole" class="console" aria-live="polite"></pre>
+    </section>
+
+  </div>
+
+  <script defer src="script.js?v=5"></script>
 </body>
 </html>
 
